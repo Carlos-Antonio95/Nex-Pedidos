@@ -123,3 +123,90 @@ Exemplo:
 
 Depois de salvar ou excluir com sucesso, o controller redireciona para
 `cardapio.php?sucesso=...` e a listagem recebe a `$mensagem` correspondente.
+
+### public/pedidos.php
+
+O controller faz `include` de `views/pedidos/lista.php`, que mostra a
+lista de pedidos e o formulário para abrir um novo pedido.
+
+#### Variáveis que a view recebe
+
+Todas estão **sempre definidas**.
+
+| Variável    | Tipo   | Conteúdo |
+|-------------|--------|----------|
+| `$pedidos`  | array  | Lista de pedidos. **Por enquanto vem sempre vazia** (a listagem é da Sprint 3, RF007). |
+| `$mesa`     | string | Valor digitado no campo mesa. Vazio, ou o que o usuário digitou se a abertura falhar. |
+| `$cliente`  | string | Valor digitado no campo cliente. Mesmo comportamento de `$mesa`. |
+| `$erros`    | array  | Mensagens de erro (strings). Vazio quando não há erro. |
+| `$mensagem` | string | Mensagem de sucesso. Por enquanto sempre vazia. |
+
+#### Formulário "Abrir pedido" (POST para `pedidos.php`)
+
+| Campo     | Tipo de input  | Observação |
+|-----------|----------------|------------|
+| `acao`    | hidden         | `abrir` |
+| `mesa`    | text ou number | Inteiro maior que zero. Opcional se o cliente for informado |
+| `cliente` | text           | Opcional se a mesa for informada |
+
+É preciso informar a mesa **ou** o cliente (pode ser os dois). Se der certo,
+o controller redireciona para `pedido.php?id=ID&sucesso=aberto`.
+
+### public/pedido.php
+
+O controller faz `include` de `views/pedidos/detalhe.php`, que mostra um
+pedido, seus itens, o total e os formulários para adicionar e remover itens.
+
+#### Link (GET)
+
+| Link                | O que mostra                |
+|---------------------|-----------------------------|
+| `pedido.php?id=ID`  | Detalhe do pedido           |
+
+#### Variáveis que a view recebe
+
+Todas estão **sempre definidas**.
+
+| Variável         | Tipo         | Conteúdo |
+|------------------|--------------|----------|
+| `$pedido`        | array ou null | Dados do pedido: `id`, `mesa`, `cliente`, `status`, `criado_em`. É `null` quando o pedido não existe (nesse caso `$erros` traz "Pedido não encontrado."). |
+| `$itensPedido`   | array        | Itens do pedido. Cada um tem `item_id`, `nome`, `quantidade`, `preco_unitario`, `subtotal`. Vazio se o pedido não tem itens. |
+| `$total`         | float        | Total do pedido (soma dos subtotais). `0.0` se não houver itens. |
+| `$itensCardapio` | array        | Itens do cardápio para o `<select>` (mesmas chaves de `$itens` do cardápio). |
+| `$erros`         | array        | Mensagens de erro (strings). Vazio quando não há erro. |
+| `$mensagem`      | string       | Mensagem de sucesso (ex.: "Item adicionado ao pedido."). Vazia quando não há. |
+
+A view deve testar `if ($pedido === null)` antes de mostrar os dados do pedido.
+
+Para exibir valores em reais: `number_format($total, 2, ',', '.')` mostra `48,00`.
+
+`mesa` e `cliente` podem vir `null` (o pedido tem um ou outro, ou os dois).
+
+#### Formulários (POST para `pedido.php`)
+
+Adicionar item e remover item usam os mesmos campos; só muda a `acao`.
+
+| Campo        | Tipo de input | Observação |
+|--------------|---------------|------------|
+| `acao`       | hidden        | `adicionar` ou `remover` |
+| `pedido_id`  | hidden        | `$pedido['id']` |
+| `item_id`    | select (adicionar) / hidden (remover) | ID do item do cardápio |
+| `quantidade` | number        | Inteiro maior que zero |
+
+Exemplo de botão de remover uma unidade, para cada item da tabela:
+
+```html
+<form method="post" action="pedido.php">
+    <input type="hidden" name="acao" value="remover">
+    <input type="hidden" name="pedido_id" value="<?= $pedido['id'] ?>">
+    <input type="hidden" name="item_id" value="<?= $ip['item_id'] ?>">
+    <input type="hidden" name="quantidade" value="1">
+    <button type="submit">Remover 1</button>
+</form>
+```
+
+Se der certo, o controller redireciona para `pedido.php?id=ID&sucesso=...`
+e a view recebe a `$mensagem` correspondente. Se der erro, a view é exibida
+com `$erros` e com os dados atuais do pedido (nada é alterado).
+
+Pedidos com status "Entregue" ou "Cancelado" não aceitam mais alterações nos itens.
