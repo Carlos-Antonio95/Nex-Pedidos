@@ -1,14 +1,16 @@
 <?php
 /**
- * Controller de um pedido específico (RF004 e RF005).
+ * Controller de um pedido específico (RF004, RF005, RF006 e RF008).
  *
  * Rotas:
  *   GET  pedido.php?id=1                                -> mostra o pedido
  *   POST acao=adicionar + pedido_id, item_id, quantidade -> adiciona item (RF004)
  *   POST acao=remover   + pedido_id, item_id, quantidade -> remove item (RF004)
+ *   POST acao=status    + pedido_id, status             -> avança o status (RF006)
+ *   POST acao=cancelar  + pedido_id                     -> cancela o pedido (RF008)
  *
  * Variáveis enviadas para a view: $pedido, $itensPedido, $total,
- * $itensCardapio, $erros, $mensagem.
+ * $itensCardapio, $proximoStatus, $erros, $mensagem.
  */
 
 require_once __DIR__ . '/../config/database.php';
@@ -23,6 +25,7 @@ $pedido = null;
 $itensPedido = [];
 $total = 0.0;
 $itensCardapio = $modelCardapio->listar(); // opções do select de itens
+$proximoStatus = null;
 $erros = [];
 $mensagem = '';
 
@@ -31,12 +34,14 @@ $mensagensSucesso = [
     'aberto'     => 'Pedido aberto com sucesso.',
     'adicionado' => 'Item adicionado ao pedido.',
     'removido'   => 'Item removido do pedido.',
+    'status'     => 'Status do pedido atualizado.',
+    'cancelado'  => 'Pedido cancelado.',
 ];
 
 $acao = $_POST['acao'] ?? '';
 $id = $_POST['pedido_id'] ?? $_GET['id'] ?? '';
 
-// ---------- Requisições POST: adicionar ou remover itens (RF004) ----------
+// ---------- Requisições POST: itens, status e cancelamento ----------
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $itemId = $_POST['item_id'] ?? '';
     $quantidade = $_POST['quantidade'] ?? '';
@@ -47,6 +52,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($acao === 'remover') {
         $erros = $model->removerItem($id, $itemId, $quantidade);
         $sucesso = 'removido';
+    } elseif ($acao === 'status') {
+        $erros = $model->alterarStatus($id, $_POST['status'] ?? '');
+        $sucesso = 'status';
+    } elseif ($acao === 'cancelar') {
+        $erros = $model->cancelar($id);
+        $sucesso = 'cancelado';
     } else {
         $erros = ['Ação inválida.'];
     }
@@ -58,8 +69,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// TODO Sprint 3 — RF006/RF008: alterar status e cancelar o pedido
-
 // ---------- Exibir o pedido ----------
 $pedido = $model->buscarPorId($id);
 
@@ -69,6 +78,7 @@ if ($pedido === null) {
 } else {
     $itensPedido = $pedido['itens'];
     $total = $model->calcularTotal($id);
+    $proximoStatus = $model->proximoStatus($pedido['status']);
 
     $sucesso = $_GET['sucesso'] ?? '';
     if (empty($erros) && isset($mensagensSucesso[$sucesso])) {

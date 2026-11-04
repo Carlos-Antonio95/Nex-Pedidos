@@ -3,10 +3,12 @@
  * Controller da lista de pedidos.
  *
  * Rotas:
- *   GET  pedidos.php                  -> lista os pedidos e o formulário de novo pedido
+ *   GET  pedidos.php                  -> lista todos os pedidos (RF007)
+ *   GET  pedidos.php?status=Pronto    -> lista só os pedidos com esse status (RF007)
  *   POST acao=abrir + mesa, cliente   -> abre um pedido (RF003)
  *
- * Variáveis enviadas para a view: $pedidos, $mesa, $cliente, $erros, $mensagem.
+ * Variáveis enviadas para a view: $pedidos, $statusFiltro, $listaStatus,
+ * $mesa, $cliente, $erros, $mensagem.
  */
 
 require_once __DIR__ . '/../config/database.php';
@@ -15,7 +17,9 @@ require_once __DIR__ . '/../models/Pedido.php';
 $model = new Pedido();
 
 // Valores padrão para a view (sempre definidos)
-$pedidos = []; // TODO Sprint 3 — RF007: listar pedidos com filtro por status
+$pedidos = [];
+$statusFiltro = trim($_GET['status'] ?? '');
+$listaStatus = Pedido::STATUS; // opções do select de filtro
 $mesa = '';
 $cliente = '';
 $erros = [];
@@ -42,5 +46,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Listagem (tela padrão). Em caso de erro, volta com os valores digitados.
+// ---------- Listagem (RF007) ----------
+$resultado = $model->listar($statusFiltro);
+$pedidos = $resultado['pedidos'];
+$erros = array_merge($erros, $resultado['erros']);
+
+// Só avisa que a lista está vazia se o filtro for válido
+if (empty($pedidos) && empty($resultado['erros'])) {
+    $mensagem = 'Nenhum pedido encontrado.';
+}
+
+// Em caso de erro ao abrir, a tela volta com os valores digitados
 include __DIR__ . '/../views/pedidos/lista.php';

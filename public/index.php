@@ -1,5 +1,4 @@
 <?php
-require_once __DIR__ . '/../config/database.php';
-
-// TODO Sprint 3: página inicial com links para o cardápio (RF001/RF002)
-// e para a lista de pedidos (RF007)
+// Página inicial: vai direto para a lista de pedidos
+header('Location: pedidos.php');
+exit;

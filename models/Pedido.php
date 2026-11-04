@@ -4,13 +4,20 @@
  *
  * Assim como em ItemCardapio, os métodos que alteram dados retornam
  * um array de erros. Se o array vier vazio, a operação deu certo.
- * A exceção é abrir(), que também precisa devolver o id do pedido criado.
+ * As exceções são abrir() e listar(), que também precisam devolver
+ * dados: elas retornam um array com os dados e a chave 'erros'.
  */
 
 require_once __DIR__ . '/../config/database.php';
 
 class Pedido
 {
+    // Todos os status possíveis de um pedido
+    const STATUS = ['Recebido', 'Em preparo', 'Pronto', 'Entregue', 'Cancelado'];
+
+    // RN003 — etapas que o pedido percorre, nesta ordem
+    const ETAPAS = ['Recebido', 'Em preparo', 'Pronto', 'Entregue'];
+
     private $pdo;
 
     public function __construct()
@@ -164,19 +171,132 @@ class Pedido
         return round((float) $stmt->fetchColumn(), 2);
     }
 
+    /**
+     * RF006 / RN003 — Avança o pedido para a próxima etapa.
+     * Recebido → Em preparo → Pronto → Entregue, sem pular nem voltar.
+     */
     public function alterarStatus($pedidoId, $novoStatus)
     {
-        // TODO Sprint 3 — RF006/RN003: alterar o status do pedido
+        $pedido = $this->buscarPorId($pedidoId);
+
+        if ($pedido === null) {
+            return ['Pedido não encontrado.'];
+        }
+
+        $erros = $this->validarMudancaDeStatus($pedido, $novoStatus);
+        if (!empty($erros)) {
+            return $erros;
+        }
+
+        $stmt = $this->pdo->prepare('UPDATE pedidos SET status = ? WHERE id = ?');
+        $stmt->execute([$novoStatus, $pedidoId]);
+
+        return [];
     }
 
+    /**
+     * Retorna a próxima etapa do pedido, ou null se não houver
+     * (pedido entregue, cancelado ou status desconhecido).
+     */
+    public function proximoStatus($statusAtual)
+    {
+        $posicao = array_search($statusAtual, self::ETAPAS);
+
+        if ($posicao === false || !isset(self::ETAPAS[$posicao + 1])) {
+            return null;
+        }
+
+        return self::ETAPAS[$posicao + 1];
+    }
+
+    /**
+     * RF007 — Lista os pedidos, do mais recente para o mais antigo,
+     * com o total de cada um. Se $status vier preenchido, filtra por ele.
+     *
+     * Retorna ['pedidos' => lista, 'erros' => []].
+     * Cada pedido tem: id, mesa, cliente, status, criado_em e total.
+     */
     public function listar($status = null)
     {
-        // TODO Sprint 3 — RF007: listar pedidos, com filtro opcional por status
+        $status = trim((string) $status);
+
+        if ($status !== '' && !in_array($status, self::STATUS)) {
+            return ['pedidos' => [], 'erros' => ['Status inválido.']];
+        }
+
+        // LEFT JOIN para incluir também os pedidos ainda sem itens (total 0)
+        $sql = '
+            SELECT p.*, COALESCE(SUM(ip.quantidade * ip.preco_unitario), 0) AS total
+            FROM pedidos p
+            LEFT JOIN itens_pedido ip ON ip.pedido_id = p.id
+        ';
+        $parametros = [];
+
+        if ($status !== '') {
+            $sql .= ' WHERE p.status = ?';
+            $parametros[] = $status;
+        }
+
+        $sql .= ' GROUP BY p.id ORDER BY p.criado_em DESC, p.id DESC';
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($parametros);
+        $pedidos = $stmt->fetchAll();
+
+        foreach ($pedidos as $i => $pedido) {
+            $pedidos[$i]['total'] = round((float) $pedido['total'], 2);
+        }
+
+        return ['pedidos' => $pedidos, 'erros' => []];
     }
 
+    /**
+     * RF008 / RN004 — Cancela o pedido. Pedido entregue não pode ser cancelado.
+     */
     public function cancelar($pedidoId)
     {
-        // TODO Sprint 3 — RF008/RN004: cancelar o pedido
+        $pedido = $this->buscarPorId($pedidoId);
+
+        if ($pedido === null) {
+            return ['Pedido não encontrado.'];
+        }
+
+        if ($pedido['status'] === 'Entregue') {
+            return ['Não é possível cancelar um pedido já entregue.'];
+        }
+
+        if ($pedido['status'] === 'Cancelado') {
+            return ['Este pedido já está cancelado.'];
+        }
+
+        $stmt = $this->pdo->prepare('UPDATE pedidos SET status = ? WHERE id = ?');
+        $stmt->execute(['Cancelado', $pedidoId]);
+
+        return [];
+    }
+
+    /**
+     * RN003 — Confere se o pedido pode ir para o novo status.
+     */
+    private function validarMudancaDeStatus($pedido, $novoStatus)
+    {
+        if (!in_array($novoStatus, self::STATUS)) {
+            return ['Status inválido.'];
+        }
+
+        if ($novoStatus === 'Cancelado') {
+            return ['Para cancelar o pedido, use a opção Cancelar.'];
+        }
+
+        if (!$this->estaAberto($pedido)) {
+            return ['Não é possível alterar um pedido entregue ou cancelado.'];
+        }
+
+        if ($novoStatus !== $this->proximoStatus($pedido['status'])) {
+            return ['Não é possível pular etapas ou voltar para uma etapa anterior.'];
+        }
+
+        return [];
     }
 
     /**
@@ -204,6 +324,7 @@ class Pedido
 
     /**
      * Um pedido está aberto enquanto não foi entregue nem cancelado.
+     * Só pedidos abertos podem ter itens ou status alterados.
      */
     private function estaAberto($pedido)
     {
