@@ -35,7 +35,7 @@ include __DIR__ . '/../layout/cabecalho.php';
         <?php if (empty($pedidos)): ?>
             <div class="empty-state">
                 <div class="empty-icon" aria-hidden="true">▦</div>
-                <h3>Nenhum pedido encontrado</h3>
+                <h3><?= e($mensagem !== '' ? $mensagem : 'Nenhum pedido encontrado.') ?></h3>
                 <p>Abra um pedido para uma mesa ou cliente usando o formulário abaixo.</p>
             </div>
         <?php else: ?>
@@ -52,7 +52,7 @@ include __DIR__ . '/../layout/cabecalho.php';
                             'Entregue' => 'badge-entregue',
                             'Cancelado' => 'badge-cancelado',
                         ][$p['status']] ?? '';
-                        $destino = $p['mesa'] !== null ? 'Mesa ' . $p['mesa'] : $p['cliente'];
+                        $destino = $p['mesa'] !== null ? 'Mesa ' . str_pad($p['mesa'], 2, '0', STR_PAD_LEFT) : $p['cliente'];
                         $horario = strtotime($p['criado_em']);
                         ?>
                         <tr>
@@ -77,7 +77,7 @@ include __DIR__ . '/../layout/cabecalho.php';
             <div class="form-row">
                 <div>
                     <label class="field-label" for="mesa">Número da mesa <span class="form-hint">(opcional)</span></label>
-                    <input class="text-input" id="mesa" name="mesa" type="number" min="1" step="1" value="<?= e($mesa) ?>" placeholder="Ex.: 4">
+                    <input class="text-input" id="mesa" name="mesa" type="text" inputmode="numeric" value="<?= e($mesa) ?>" placeholder="Ex.: 4">
                 </div>
                 <div>
                     <label class="field-label" for="cliente">Nome do cliente <span class="form-hint">(opcional)</span></label>

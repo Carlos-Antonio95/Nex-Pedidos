@@ -47,7 +47,7 @@ include __DIR__ . '/../layout/cabecalho.php';
                         <form class="inline-form" method="post" action="cardapio.php">
                             <input type="hidden" name="acao" value="excluir">
                             <input type="hidden" name="id" value="<?= e($i['id']) ?>">
-                            <button type="submit">Excluir</button>
+                            <button type="submit" onclick="return confirm('Deseja realmente excluir este item?')">Excluir</button>
                         </form>
                     </div>
                 </article>

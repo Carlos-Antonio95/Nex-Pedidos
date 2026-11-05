@@ -25,7 +25,7 @@ include __DIR__ . '/../layout/cabecalho.php';
             <?php if ($editando): ?><input type="hidden" name="id" value="<?= e($item['id']) ?>"><?php endif; ?>
 
             <label class="field-label" for="nome">Nome do item</label>
-            <input class="text-input" id="nome" name="nome" type="text" required value="<?= e($item['nome']) ?>" autocomplete="off">
+            <input class="text-input" id="nome" name="nome" type="text" value="<?= e($item['nome']) ?>" autocomplete="off">
 
             <label class="field-label" for="descricao">Descrição <span class="form-hint">(opcional)</span></label>
             <textarea class="text-input" id="descricao" name="descricao" rows="3"><?= e($item['descricao']) ?></textarea>
@@ -33,11 +33,11 @@ include __DIR__ . '/../layout/cabecalho.php';
             <div class="form-row">
                 <div>
                     <label class="field-label" for="preco">Preço (R$)</label>
-                    <input class="text-input" id="preco" name="preco" type="text" inputmode="decimal" required value="<?= e($item['preco']) ?>" placeholder="Ex.: 8,50">
+                    <input class="text-input" id="preco" name="preco" type="text" inputmode="decimal" value="<?= e($item['preco']) ?>" placeholder="Ex.: 8,50">
                 </div>
                 <div>
                     <label class="field-label" for="categoria">Categoria</label>
-                    <input class="text-input" id="categoria" name="categoria" type="text" required value="<?= e($item['categoria']) ?>" placeholder="Ex.: Bebidas">
+                    <input class="text-input" id="categoria" name="categoria" type="text" value="<?= e($item['categoria']) ?>" placeholder="Ex.: Bebidas">
                 </div>
             </div>
 

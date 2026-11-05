@@ -6,7 +6,7 @@ Permite cadastrar os itens do cardápio, abrir pedidos por mesa ou cliente,
 adicionar itens, calcular o total e acompanhar o status de cada pedido.
 
 **Tecnologias:** PHP puro (sem framework e sem Composer), SQLite via PDO,
-HTML e CSS (sem JavaScript). Arquitetura MVC simples.
+HTML e CSS, com JavaScript apenas para confirmar exclusão e cancelamento. Arquitetura MVC simples.
 
 ## Como rodar
 

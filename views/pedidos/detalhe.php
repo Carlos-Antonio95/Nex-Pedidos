@@ -31,7 +31,7 @@ include __DIR__ . '/../layout/cabecalho.php';
             'Entregue' => 'badge-entregue',
             'Cancelado' => 'badge-cancelado',
         ][$pedido['status']] ?? '';
-        $destino = $pedido['mesa'] !== null ? 'Mesa ' . $pedido['mesa'] : $pedido['cliente'];
+        $destino = $pedido['mesa'] !== null ? 'Mesa ' . str_pad($pedido['mesa'], 2, '0', STR_PAD_LEFT) : $pedido['cliente'];
         $criadoEm = strtotime($pedido['criado_em']);
         ?>
         <section class="detail-panel">
@@ -80,7 +80,7 @@ include __DIR__ . '/../layout/cabecalho.php';
                                 <option value="<?= e($i['id']) ?>"><?= e($i['nome']) ?> — R$ <?= number_format((float) $i['preco'], 2, ',', '.') ?></option>
                             <?php endforeach; ?>
                         </select>
-                        <input class="text-input" name="quantidade" type="number" min="1" step="1" value="1" required aria-label="Quantidade">
+                        <input class="text-input" name="quantidade" type="text" inputmode="numeric" value="1" aria-label="Quantidade">
                     </div>
                     <div class="form-actions"><button class="button button-primary" type="submit">Adicionar ao pedido</button></div>
                 </form>
@@ -97,7 +97,7 @@ include __DIR__ . '/../layout/cabecalho.php';
                     <form method="post" action="pedido.php">
                         <input type="hidden" name="acao" value="cancelar">
                         <input type="hidden" name="pedido_id" value="<?= e($pedido['id']) ?>">
-                        <button class="button button-outline" type="submit">Cancelar pedido</button>
+                        <button class="button button-outline" type="submit" onclick="return confirm('Deseja realmente cancelar este pedido?')">Cancelar pedido</button>
                     </form>
                 <?php endif; ?>
             </div>
