@@ -94,6 +94,9 @@ include __DIR__ . '/../layout/cabecalho.php';
                         <input type="hidden" name="status" value="<?= e($proximoStatus) ?>">
                         <button class="button button-primary" type="submit">Marcar como <?= e($proximoStatus) ?></button>
                     </form>
+                <?php endif; ?>
+                <?php // PED-79: o botão aparece também para pedido Entregue; o back-end bloqueia (RN004) e mostra a mensagem ?>
+                <?php if ($pedido['status'] !== 'Cancelado'): ?>
                     <form method="post" action="pedido.php">
                         <input type="hidden" name="acao" value="cancelar">
                         <input type="hidden" name="pedido_id" value="<?= e($pedido['id']) ?>">

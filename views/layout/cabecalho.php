@@ -8,6 +8,12 @@ if (!function_exists('e')) {
 
 $paginaAtual = $paginaAtual ?? 'pedidos';
 $titulo = $titulo ?? 'Nex-Pedidos';
+
+// Usuário logado (RF010): nome e iniciais para o cabeçalho
+$usuarioAtual = function_exists('usuarioLogado') ? usuarioLogado() : null;
+$nomeUsuario = $usuarioAtual['nome'] ?? 'Usuário';
+$partesNome = preg_split('/\s+/', trim($nomeUsuario));
+$iniciais = strtoupper(substr($partesNome[0], 0, 1) . (count($partesNome) > 1 ? substr(end($partesNome), 0, 1) : ''));
 ?>
 <!doctype html>
 <html lang="pt-BR">
@@ -43,8 +49,8 @@ $titulo = $titulo ?? 'Nex-Pedidos';
                 <span>Operação ativa<small>Gerencie seus pedidos e itens</small></span>
             </div>
             <div class="user-card">
-                <span class="avatar" aria-hidden="true">NP</span>
-                <span>Nex-Pedidos<small>Gestão do restaurante</small></span>
+                <span class="avatar" aria-hidden="true"><?= e($iniciais) ?></span>
+                <span><?= e($nomeUsuario) ?><small><?= e($usuarioAtual['email'] ?? '') ?></small></span>
             </div>
         </div>
     </aside>
@@ -53,6 +59,10 @@ $titulo = $titulo ?? 'Nex-Pedidos';
             <div class="breadcrumb">Painel <span>/</span> <strong><?= e($titulo) ?></strong></div>
             <div class="topbar-right">
                 <span><?= e(date('d/m/Y')) ?></span>
-                <span class="top-avatar" aria-hidden="true">NP</span>
+                <span class="top-user"><?= e($nomeUsuario) ?></span>
+                <span class="top-avatar" aria-hidden="true"><?= e($iniciais) ?></span>
+                <form class="inline-form top-logout" method="post" action="sair.php">
+                    <button class="text-link" type="submit">Sair</button>
+                </form>
             </div>
         </header>

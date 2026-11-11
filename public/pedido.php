@@ -14,8 +14,12 @@
  */
 
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../config/auth.php';
 require_once __DIR__ . '/../models/Pedido.php';
 require_once __DIR__ . '/../models/ItemCardapio.php';
+
+// RF010 — só usuários logados acessam esta página
+exigirLogin();
 
 $model = new Pedido();
 $modelCardapio = new ItemCardapio();

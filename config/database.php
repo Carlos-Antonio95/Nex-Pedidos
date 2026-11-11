@@ -91,6 +91,17 @@ function criarTabelas(PDO $pdo)
             FOREIGN KEY (item_id) REFERENCES itens_cardapio (id)
         )
     ");
+
+    // RF009 / RF010 — usuários do sistema (e-mail único, senha guardada com hash)
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS usuarios (
+            id         INTEGER PRIMARY KEY AUTOINCREMENT,
+            nome       TEXT NOT NULL,
+            email      TEXT NOT NULL UNIQUE COLLATE NOCASE,
+            senha_hash TEXT NOT NULL,
+            criado_em  TEXT NOT NULL DEFAULT (datetime('now', 'localtime'))
+        )
+    ");
 }
 
 /**
@@ -100,6 +111,26 @@ function inserirDadosDeExemplo(PDO $pdo)
 {
     inserirCardapioDeExemplo($pdo);
     inserirPedidosDeExemplo($pdo);
+    inserirUsuarioDeExemplo($pdo);
+}
+
+/**
+ * Se não houver usuários, cria um administrador para o primeiro acesso.
+ *
+ * Login: admin@nexpedidos.com / senha: admin123
+ * O e-mail "maria@email.com" NÃO é criado aqui de propósito: o cenário
+ * de teste do RF009 cadastra esse usuário pela tela de cadastro.
+ */
+function inserirUsuarioDeExemplo(PDO $pdo)
+{
+    $total = $pdo->query('SELECT COUNT(*) FROM usuarios')->fetchColumn();
+
+    if ($total > 0) {
+        return;
+    }
+
+    $stmt = $pdo->prepare('INSERT INTO usuarios (nome, email, senha_hash) VALUES (?, ?, ?)');
+    $stmt->execute(['Administrador', 'admin@nexpedidos.com', password_hash('admin123', PASSWORD_DEFAULT)]);
 }
 
 /**

@@ -23,8 +23,12 @@ HTML e CSS, com JavaScript apenas para confirmar exclusão e cancelamento. Arqui
    controllers e os arquivos de `assets/` ficam acessíveis pelo navegador;
    `config/`, `models/`, `views/` e o banco não podem ser abertos por URL.
 
-3. Acesse <http://localhost:8000> no navegador (abre a lista de pedidos).
-   O cardápio fica em <http://localhost:8000/cardapio.php>.
+3. Acesse <http://localhost:8000> no navegador. Sem login, abre a tela de **login**;
+   depois de entrar, abre a lista de pedidos. O cardápio fica em
+   <http://localhost:8000/cardapio.php>.
+
+**Primeiro acesso:** use o usuário de exemplo `admin@nexpedidos.com` / senha `admin123`,
+ou crie uma conta em <http://localhost:8000/cadastro.php>.
 
 O banco `database/pedidos.sqlite` é criado automaticamente na primeira
 execução, já com as tabelas e os dados de exemplo abaixo.
@@ -118,6 +122,8 @@ nos links e no CSS use caminhos relativos a `public/`, por exemplo
 | 3 | RF006 / RN003 | Alterar status seguindo a sequência, sem pular nem voltar | `public/pedido.php`, `Pedido::alterarStatus()` / `proximoStatus()` | Pronto |
 | 3 | RF007 | Listar pedidos com filtro por status | `public/pedidos.php`, `Pedido::listar()` | Pronto |
 | 3 | RF008 / RN004 | Cancelar pedido (exceto se já entregue) | `public/pedido.php`, `Pedido::cancelar()` | Pronto |
+| 4 | RF009 | Cadastrar usuário (nome, e-mail único e senha com no mínimo 6 caracteres) | `public/cadastro.php`, `Usuario::cadastrar()` | Pronto |
+| 4 | RF010 | Login por e-mail e senha; todas as páginas exigem login | `public/login.php`, `public/sair.php`, `Usuario::autenticar()`, `config/auth.php` | Pronto |
 
 Sequência de status (RN003): **Recebido → Em preparo → Pronto → Entregue**.
 "Cancelado" pode ser aplicado em qualquer etapa antes de "Entregue" (RN004).
@@ -349,3 +355,32 @@ e a view recebe a `$mensagem` correspondente:
 Se der erro, a view é exibida com `$erros` e com os dados atuais do pedido
 (nada é alterado). Pedidos com status "Entregue" ou "Cancelado" não aceitam
 mais alterações nos itens nem no status.
+
+### public/cadastro.php (RF009)
+
+Tela: `views/usuarios/cadastro.php`. Recebe `$usuario` (chaves `nome`, `email`; a senha
+nunca volta para a tela) e `$erros`.
+
+Formulário (POST para `cadastro.php`): `nome`, `email`, `senha`. Botão **"Cadastrar"**.
+Sucesso redireciona para `login.php?sucesso=cadastrado` com
+"Cadastro realizado com sucesso. Faça login para continuar.".
+
+Mensagens de erro: "O nome é obrigatório.", "O e-mail é obrigatório.",
+"Informe um e-mail válido.", "Este e-mail já está cadastrado.",
+"A senha deve ter no mínimo 6 caracteres.".
+
+### public/login.php e public/sair.php (RF010)
+
+Tela: `views/usuarios/login.php`. Recebe `$email` (o que foi digitado), `$erros` e `$mensagem`.
+
+Formulário (POST para `login.php`): `email`, `senha`. Botão **"Entrar"**.
+Sucesso abre a tela inicial (`pedidos.php`). Erro: "E-mail ou senha incorretos."
+(a mesma mensagem para e-mail inexistente ou senha errada) ou "Informe o e-mail e a senha.".
+
+Sair: formulário POST para `sair.php` (botão "Sair" no topo de todas as telas).
+Volta para `login.php?sucesso=saiu`.
+
+`cardapio.php`, `pedidos.php` e `pedido.php` chamam `exigirLogin()` (`config/auth.php`):
+sem sessão, redirecionam para `login.php`. O cabeçalho usa `usuarioLogado()` para mostrar
+o nome e as iniciais do usuário.
+
