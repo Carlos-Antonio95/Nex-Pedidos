@@ -58,31 +58,38 @@ Verificar que o item não está no pedido
 # ===== Pessoa 3 — RF005 =====
 Pegar o total do pedido
     [Documentation]    Retorna o texto do total (ex.: "R$ 28,50"), para comparar depois.
-    Fail    TODO: Get Text em \${DETALHE_TOTAL} e RETURN do resultado
+    ${total}=    Get Text    ${DETALHE_TOTAL}
+    RETURN    ${total}
 
 Verificar o total do pedido
     [Documentation]    Confere o total exibido (ex.: "R$ 48,00").
     [Arguments]    ${total}
-    Fail    TODO: Element Text Should Be em \${DETALHE_TOTAL}
+    Element Text Should Be    ${DETALHE_TOTAL}    ${total}
 
 # ===== Pessoa 3 — RF006 =====
 Avançar o status para
     [Documentation]    Clica em "Marcar como <status>". Também usado no RF008-N.
     [Arguments]    ${status}
-    Fail    TODO: Montar XPath com \${DETALHE_BOTAO_MARCAR_COMO}, Click Button e Wait Until Element Is Visible com \${DETALHE_MENSAGEM_SUCESSO}
+    ${xpath}=    Montar XPath    ${DETALHE_BOTAO_MARCAR_COMO}    ${status}
+    Click Button    ${xpath}
+    Wait Until Element Is Visible    ${DETALHE_MENSAGEM_SUCESSO}
 
 Verificar que a única etapa oferecida é
     [Documentation]    A tela só mostra o botão da próxima etapa: confere que existe
     ...                exatamente um botão "Marcar como ..." e que é o do status informado.
     [Arguments]    ${status}
-    Fail    TODO: Page Should Contain Element com \${DETALHE_BOTOES_MARCAR_COMO} e limit=1; Montar XPath com \${DETALHE_BOTAO_MARCAR_COMO} e Page Should Contain Element
+    Page Should Contain Element    ${DETALHE_BOTOES_MARCAR_COMO}    limit=1
+    ${xpath}=    Montar XPath    ${DETALHE_BOTAO_MARCAR_COMO}    ${status}
+    Page Should Contain Element    ${xpath}
 
 Verificar que a etapa não é oferecida
     [Documentation]    Confere que não existe botão "Marcar como <status>" (ex.: "Pronto").
     [Arguments]    ${status}
-    Fail    TODO: Montar XPath com \${DETALHE_BOTAO_MARCAR_COMO} e Page Should Not Contain Element
+    ${xpath}=    Montar XPath    ${DETALHE_BOTAO_MARCAR_COMO}    ${status}
+    Page Should Not Contain Element    ${xpath}
 
 # ===== Pessoa 4 — RF008 =====
 Cancelar o pedido com confirmação
     [Documentation]    Clica em "Cancelar pedido" e confirma a janela do navegador.
-    Fail    TODO: Click Button em \${DETALHE_BOTAO_CANCELAR_PEDIDO} e Confirmar a janela do navegador
+    Click Button    ${DETALHE_BOTAO_CANCELAR_PEDIDO}
+    Confirmar a janela do navegador

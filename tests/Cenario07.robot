@@ -13,12 +13,11 @@ RF007-P - filtrar pedidos por status
     ...                Quando seleciono o filtro de status "Em preparo"
     ...                Então o sistema deve exibir somente os pedidos com status "Em preparo"
     [Tags]    RF007    positivo    regression
-    Skip    Pendente de automação
     # Obs.: Os dados de exemplo já têm pedidos "Recebido" e "Em preparo".
-    # Verificar que existem pedidos com status    Recebido
-    # Verificar que existem pedidos com status    Em preparo
-    # Filtrar pedidos por status    Em preparo
-    # Verificar que só aparecem pedidos com status    Em preparo
+    Verificar que existem pedidos com status    Recebido
+    Verificar que existem pedidos com status    Em preparo
+    Filtrar pedidos por status    Em preparo
+    Verificar que só aparecem pedidos com status    Em preparo
 
 RF007-N - filtrar por status sem resultados
     [Documentation]    Dado que não existem pedidos com status "Entregue"
@@ -26,9 +25,8 @@ RF007-N - filtrar por status sem resultados
     ...                Então o sistema deve exibir a lista vazia
     ...                E deve informar que nenhum pedido foi encontrado
     [Tags]    RF007    negativo    regression
-    Skip    Pendente de automação
     # Obs.: Só passa num banco de teste novo e ANTES do Cenario08: o RF008-N cria um
     #       pedido "Entregue". Rodando a pasta tests/ inteira, a ordem já é essa.
-    # Verificar que não existem pedidos com status    Entregue
-    # Filtrar pedidos por status    Entregue
-    # Verificar que a lista de pedidos está vazia    Nenhum pedido encontrado.
+    Verificar que não existem pedidos com status    Entregue
+    Filtrar pedidos por status    Entregue
+    Verificar que a lista de pedidos está vazia    Nenhum pedido encontrado.

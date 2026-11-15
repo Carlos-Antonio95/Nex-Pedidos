@@ -69,25 +69,33 @@ Verificar mensagem de erro da lista de pedidos
 Verificar que existem pedidos com status
     [Documentation]    Confere que a lista (sem filtro) tem ao menos um pedido com o status.
     [Arguments]    ${status}
-    Fail    TODO: Acessar a tela de pedidos, Montar XPath com \${PEDIDOS_BADGE_COM_STATUS} e Page Should Contain Element
+    Acessar a tela de pedidos
+    ${xpath}=    Montar XPath    ${PEDIDOS_BADGE_COM_STATUS}    ${status}
+    Page Should Contain Element    ${xpath}
 
 Verificar que não existem pedidos com status
     [Documentation]    Confere que a lista (sem filtro) não tem pedido com o status.
     [Arguments]    ${status}
-    Fail    TODO: Acessar a tela de pedidos, Montar XPath com \${PEDIDOS_BADGE_COM_STATUS} e Page Should Not Contain Element
+    Acessar a tela de pedidos
+    ${xpath}=    Montar XPath    ${PEDIDOS_BADGE_COM_STATUS}    ${status}
+    Page Should Not Contain Element    ${xpath}
 
 Filtrar pedidos por status
     [Documentation]    Seleciona o status no filtro e clica em "Filtrar".
     [Arguments]    ${status}
-    Fail    TODO: Select From List By Value em \${PEDIDOS_FILTRO_STATUS} e Click Button em \${PEDIDOS_BOTAO_FILTRAR}
+    Select From List By Value    ${PEDIDOS_FILTRO_STATUS}    ${status}
+    Click Button    ${PEDIDOS_BOTAO_FILTRAR}
 
 Verificar que só aparecem pedidos com status
     [Documentation]    Confere que há pedidos na lista e que nenhum tem outro status.
     [Arguments]    ${status}
-    Fail    TODO: Page Should Contain Element com \${PEDIDOS_LINHAS}; Montar XPath com \${PEDIDOS_BADGE_DIFERENTE_DE} e Page Should Not Contain Element
+    Page Should Contain Element    ${PEDIDOS_LINHAS}
+    ${xpath}=    Montar XPath    ${PEDIDOS_BADGE_DIFERENTE_DE}    ${status}
+    Page Should Not Contain Element    ${xpath}
 
 Verificar que a lista de pedidos está vazia
     [Documentation]    Confere que a tabela não aparece e que a mensagem é exibida
     ...                (ex.: "Nenhum pedido encontrado.").
     [Arguments]    ${mensagem}
-    Fail    TODO: Page Should Not Contain Element com \${PEDIDOS_TABELA} e Element Text Should Be em \${PEDIDOS_MENSAGEM_LISTA_VAZIA}
+    Page Should Not Contain Element    ${PEDIDOS_TABELA}
+    Element Text Should Be    ${PEDIDOS_MENSAGEM_LISTA_VAZIA}    ${mensagem}
