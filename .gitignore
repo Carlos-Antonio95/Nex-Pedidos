@@ -1,3 +1,6 @@
 # Banco de dados SQLite gerado automaticamente (inclui bancos de teste)
 database/*.sqlite
 database/*.sqlite-*
+
+# Relatórios gerados pelo Robot Framework
+results/
