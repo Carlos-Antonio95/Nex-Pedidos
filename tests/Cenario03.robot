@@ -15,12 +15,11 @@ RF003-P - abrir pedido vinculado a uma mesa
     ...                Então o sistema deve criar um novo pedido
     ...                E deve exibir o pedido vinculado à mesa "05"
     [Tags]    RF003    positivo    smoke    regression
-    Skip    Pendente de automação
     # Obs.: Depois de abrir, o sistema vai para o detalhe do pedido e mostra "Mesa 05".
-    # Acessar a tela de pedidos
-    # Informar a mesa do pedido    05
-    # Clicar em Abrir pedido
-    # Verificar que o pedido foi aberto para    Mesa 05
+    Acessar a tela de pedidos
+    Informar a mesa do pedido    05
+    Clicar em Abrir pedido
+    Verificar que o pedido foi aberto para    Mesa 05
 
 RF003-N - abrir pedido sem identificação
     [Documentation]    Dado que estou na tela de pedidos
@@ -29,8 +28,7 @@ RF003-N - abrir pedido sem identificação
     ...                Então o sistema deve impedir a abertura do pedido
     ...                E deve solicitar a identificação da mesa ou do cliente
     [Tags]    RF003    negativo    regression
-    Skip    Pendente de automação
-    # Acessar a tela de pedidos
-    # Deixar mesa e cliente em branco
-    # Clicar em Abrir pedido
-    # Verificar mensagem de erro da lista de pedidos    Informe o número da mesa ou o nome do cliente.
+    Acessar a tela de pedidos
+    Deixar mesa e cliente em branco
+    Clicar em Abrir pedido
+    Verificar mensagem de erro da lista de pedidos    Informe o número da mesa ou o nome do cliente.

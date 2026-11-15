@@ -17,14 +17,13 @@ RF004-P - adicionar e remover item com quantidade válida
     ...                E removo 1 unidade do mesmo item
     ...                Então o sistema deve manter 1 unidade do item no pedido
     [Tags]    RF004    positivo    smoke    regression
-    Skip    Pendente de automação
     # Obs.: O teste abre o próprio pedido da mesa 05, para não depender do Cenario03.
-    # Abrir um novo pedido para a mesa    05
-    # Adicionar item ao pedido    Hambúrguer    2
-    # Verificar mensagem de sucesso do pedido    Item adicionado ao pedido.
-    # Remover uma unidade do item    Hambúrguer
-    # Verificar mensagem de sucesso do pedido    Item removido do pedido.
-    # Verificar a quantidade do item no pedido    Hambúrguer    1
+    Abrir um novo pedido para a mesa    05
+    Adicionar item ao pedido    Hambúrguer    2
+    Verificar mensagem de sucesso do pedido    Item adicionado ao pedido.
+    Remover uma unidade do item    Hambúrguer
+    Verificar mensagem de sucesso do pedido    Item removido do pedido.
+    Verificar a quantidade do item no pedido    Hambúrguer    1
 
 RF004-N - adicionar item com quantidade inválida
     [Documentation]    Dado que existe um pedido aberto vinculado à mesa "05"
@@ -32,8 +31,7 @@ RF004-N - adicionar item com quantidade inválida
     ...                Então o sistema deve impedir a inclusão
     ...                E deve informar que a quantidade deve ser um número inteiro maior que zero
     [Tags]    RF004    negativo    regression
-    Skip    Pendente de automação
-    # Abrir um novo pedido para a mesa    05
-    # Adicionar item ao pedido    Hambúrguer    0
-    # Verificar mensagem de erro do pedido    A quantidade deve ser um número inteiro maior que zero.
-    # Verificar que o item não está no pedido    Hambúrguer
+    Abrir um novo pedido para a mesa    05
+    Adicionar item ao pedido    Hambúrguer    0
+    Verificar mensagem de erro do pedido    A quantidade deve ser um número inteiro maior que zero.
+    Verificar que o item não está no pedido    Hambúrguer

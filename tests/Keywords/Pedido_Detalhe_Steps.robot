@@ -10,40 +10,50 @@ Resource         ../Pages/Pedido_Detalhe_Page.robot
 Verificar mensagem de sucesso do pedido
     [Documentation]    Confere a mensagem verde (ex.: "Item adicionado ao pedido.").
     [Arguments]    ${mensagem}
-    Fail    TODO: Wait Until Element Is Visible e Element Should Contain com \${DETALHE_MENSAGEM_SUCESSO}
+    Wait Until Element Is Visible    ${DETALHE_MENSAGEM_SUCESSO}
+    Element Should Contain           ${DETALHE_MENSAGEM_SUCESSO}    ${mensagem}
 
 Verificar mensagem de erro do pedido
     [Documentation]    Confere a mensagem vermelha
     ...                (ex.: "A quantidade deve ser um número inteiro maior que zero.").
     [Arguments]    ${mensagem}
-    Fail    TODO: Wait Until Element Is Visible e Element Should Contain com \${DETALHE_MENSAGEM_ERRO}
+    Wait Until Element Is Visible    ${DETALHE_MENSAGEM_ERRO}
+    Element Should Contain           ${DETALHE_MENSAGEM_ERRO}    ${mensagem}
 
 Verificar o status do pedido
     [Documentation]    Confere o texto do badge de status (ex.: "Em preparo").
     [Arguments]    ${status}
-    Fail    TODO: Element Text Should Be em \${DETALHE_BADGE_STATUS}
+    Element Text Should Be    ${DETALHE_BADGE_STATUS}    ${status}
 
 Adicionar item ao pedido
     [Documentation]    Escolhe o item pelo nome, informa a quantidade e clica em
     ...                "Adicionar ao pedido". Usado no RF004 e no RF005.
     [Arguments]    ${item}    ${quantidade}
-    Fail    TODO: Montar XPath com \${DETALHE_OPCAO_DO_ITEM}, Get Element Attribute (value), Select From List By Value em \${DETALHE_SELECT_ITEM}, Input Text em \${DETALHE_CAMPO_QUANTIDADE} e Click Button em \${DETALHE_BOTAO_ADICIONAR}
+    ${opcao}=    Montar XPath    ${DETALHE_OPCAO_DO_ITEM}    ${item}
+    ${valor}=    Get Element Attribute    ${opcao}    value
+    Select From List By Value    ${DETALHE_SELECT_ITEM}    ${valor}
+    Input Text    ${DETALHE_CAMPO_QUANTIDADE}    ${quantidade}
+    Click Button    ${DETALHE_BOTAO_ADICIONAR}
 
 # ===== Pessoa 2 — RF004 =====
 Remover uma unidade do item
     [Documentation]    Clica em "Remover 1" na linha do item.
     [Arguments]    ${item}
-    Fail    TODO: Montar XPath com \${DETALHE_BOTAO_REMOVER_1_DO_ITEM} e Click Button
+    ${xpath}=    Montar XPath    ${DETALHE_BOTAO_REMOVER_1_DO_ITEM}    ${item}
+    Click Button    ${xpath}
 
 Verificar a quantidade do item no pedido
     [Documentation]    Confere a quantidade na linha do item (texto "1 × R$ 20,00").
     [Arguments]    ${item}    ${quantidade}
-    Fail    TODO: Montar XPath com \${DETALHE_QUANTIDADE_DO_ITEM}, Get Text e Should Start With "\${quantidade} ×"
+    ${xpath}=    Montar XPath    ${DETALHE_QUANTIDADE_DO_ITEM}    ${item}
+    ${texto}=    Get Text    ${xpath}
+    Should Start With    ${texto}    ${quantidade} ×
 
 Verificar que o item não está no pedido
     [Documentation]    Confere que não há linha para o item.
     [Arguments]    ${item}
-    Fail    TODO: Montar XPath com \${DETALHE_LINHA_DO_ITEM} e Page Should Not Contain Element
+    ${xpath}=    Montar XPath    ${DETALHE_LINHA_DO_ITEM}    ${item}
+    Page Should Not Contain Element    ${xpath}
 
 # ===== Pessoa 3 — RF005 =====
 Pegar o total do pedido

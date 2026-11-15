@@ -10,7 +10,8 @@ Resource         ../Pages/Pedido_Detalhe_Page.robot
 # ===== Comum — Pessoa 6 =====
 Acessar a tela de pedidos
     [Documentation]    Abre a lista de pedidos (todos os status).
-    Fail    TODO: Go To \${URL}/pedidos.php e Wait Until Element Is Visible com \${PEDIDOS_TITULO}
+    Go To    ${URL}/pedidos.php
+    Wait Until Element Is Visible    ${PEDIDOS_TITULO}
 
 Abrir o pedido com status
     [Documentation]    PRONTA. Filtra a lista pelo status e abre o 1º pedido
@@ -30,33 +31,39 @@ Abrir um novo pedido para a mesa
     [Documentation]    Abre um pedido novo para a mesa informada e espera a tela
     ...                de detalhe do pedido. Usado como "Dado" no RF004 e no RF005.
     [Arguments]    ${mesa}
-    Fail    TODO: Acessar a tela de pedidos, Input Text em \${PEDIDOS_CAMPO_MESA}, Click Button em \${PEDIDOS_BOTAO_ABRIR_PEDIDO} e Wait Until Element Is Visible com \${DETALHE_TITULO}
+    Acessar a tela de pedidos
+    Input Text    ${PEDIDOS_CAMPO_MESA}    ${mesa}
+    Click Button    ${PEDIDOS_BOTAO_ABRIR_PEDIDO}
+    Wait Until Element Is Visible    ${DETALHE_TITULO}
 
 # ===== Pessoa 2 — RF003 =====
 Informar a mesa do pedido
     [Documentation]    Preenche o número da mesa no formulário "Abrir pedido".
     [Arguments]    ${mesa}
-    Fail    TODO: Input Text em \${PEDIDOS_CAMPO_MESA}
+    Input Text    ${PEDIDOS_CAMPO_MESA}    ${mesa}
 
 Deixar mesa e cliente em branco
     [Documentation]    Garante que mesa e cliente estão vazios.
-    Fail    TODO: Clear Element Text em \${PEDIDOS_CAMPO_MESA} e \${PEDIDOS_CAMPO_CLIENTE}
+    Clear Element Text    ${PEDIDOS_CAMPO_MESA}
+    Clear Element Text    ${PEDIDOS_CAMPO_CLIENTE}
 
 Clicar em Abrir pedido
     [Documentation]    Envia o formulário "Abrir pedido".
-    Fail    TODO: Click Button em \${PEDIDOS_BOTAO_ABRIR_PEDIDO}
+    Click Button    ${PEDIDOS_BOTAO_ABRIR_PEDIDO}
 
 Verificar que o pedido foi aberto para
     [Documentation]    Depois de abrir, o sistema mostra o detalhe do pedido com
     ...                "Pedido aberto com sucesso." e o destino (ex.: "Mesa 05").
     [Arguments]    ${destino}
-    Fail    TODO: Wait Until Element Is Visible com \${DETALHE_MENSAGEM_SUCESSO} e Element Should Contain em \${DETALHE_DESTINO}
+    Wait Until Element Is Visible    ${DETALHE_MENSAGEM_SUCESSO}
+    Element Should Contain           ${DETALHE_DESTINO}    ${destino}
 
 Verificar mensagem de erro da lista de pedidos
     [Documentation]    Confere a mensagem vermelha da tela de pedidos
     ...                (ex.: "Informe o número da mesa ou o nome do cliente.").
     [Arguments]    ${mensagem}
-    Fail    TODO: Wait Until Element Is Visible e Element Should Contain com \${PEDIDOS_MENSAGEM_ERRO}
+    Wait Until Element Is Visible    ${PEDIDOS_MENSAGEM_ERRO}
+    Element Should Contain           ${PEDIDOS_MENSAGEM_ERRO}    ${mensagem}
 
 # ===== Pessoa 4 — RF007 =====
 Verificar que existem pedidos com status
